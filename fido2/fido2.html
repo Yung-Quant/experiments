@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChmSplit</title>
+  <meta charset="utf-8"/>
+<link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+img {
+  margin: auto;
+  float: left;
+}
+.hide{
+  visibility: hidden;
+}
+.active{
+  visibility: visible;
+  top: 0;
+}
+input[type="radio"]{
+  margin: 10px;
+}
+#question{
+  margin-top: 25px;
+}
+</style>
+</head>
+  <body>
+  <div id="consent" class="container">
+    <h3>EYE MOVEMENTS AND COGNITIVE PROCESSING IN REAL-WORLD SCENES</h3><br>
+    <h4><u>Consent Form</u></h4><br><br>
+    <li>I have had the procedures and technical language of this study explained to me.</li>
+    <li>I have been given sufficient time to consider the experimental information and to seek advice, if I chose to do so.</li>
+    <li>I am voluntarily agreeing to this</li>
+    <li>I understand that I will be participating in a study of attentional control. I also understand that the purpose of the study is to increase our knowledge of the processes that underlie our perception and memory for real-world scenes.</li>
+    <li>I understand that since I will be viewing a computer monitor for an extended period of time, dry eyes, mild irritation and headaches can be common, and I will be asked to take frequent breaks throughout the study.</li>
+    <li>I understand that there are no other known physical, psychological, economic, or social risks associated with this study.</li>
+    <li>I understand that my participation is voluntary and I am free to withdraw at any time from the study without penalty.</li>
+    <li>I have been assured that all information obtained during the course of this study is strictly confidential and my anonymity will be protected at all times.</li>
+    <li>I understand that the data that is being collected today may be used to answer a variety of questions. I agree to allow my data to be used in any future analyses, and understand that confidentiality will be maintained at all times.</li>
+    <li>I understand that I may be contacted to participate in future studies in this lab.</li>
+    <li>I understand that any questions about study participation may be directed to Dr. Monica Castelhano, Principal Investigator, (613) 533-3266, email: monica.castelhano@queensu.ca, and that any ethical concerns about the study may be directed to the Chair of the General Research Ethics Board, (613) 533-6081, email: chair.GREB@queensu.ca.</li>
+    <button class="btn btn-lg" onclick="init()">I Agree to the terms of this study and give my consent</button>
+  </div>
+  <div id="main" class="hide">
+    <p style="align-text: center;">Please look at the picture below and select one of the options that best describes the scene</p>
+<div class="container" id="question"></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous">
+</script>
+<script src="http://qvcl.queensu.ca/turkimg/files/jquery.csv.js">
+</script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script>
+var images = [];
+var count = 0;
+function init(){
+  $('#consent').addClass("hide");
+  $('#main').removeClass("hide");
+  $('#main').addClass("active");
+  $.ajax({
+      type: "GET",
+      url: 'https://raw.githubusercontent.com/Yung-Quant/expchimsplit/master/for.csv',
+      success: function(data) {parseCSV(data);}
+    });
+
+  function parseCSV(data){
+    images = data.split('\n');
+    update()
+  }
+};
+
+function update(){
+  count++;
+  var questionDiv = $('#question');
+  var inputGStart = "<div class='image'>";
+  var fileParts = images[count-1].split('.');
+  if(fileParts[1] == 'bmp'){
+    var content = "<img height='600' width='600' src='https://github.com/Yung-Quant/expchimsplit/blob/master/images/for/"+images[count-1]+"?raw=true'>";
+    var optionContStart = "<div class='container' style='float:left; width: 300px; height=300px;'>";
+    var option1 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='basement'>Basement</li>";
+    var option2 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='bathroom'>Bathroom</li>";
+    var option3 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='bedroom'>Bedroom</li>";
+    var option4 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='classroom'>Classroom</li>";
+    var option5 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='conference room'>Conference room</li>";
+    var option6 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='dinning room'>Dinning room</li>";
+    var option7 = "<li><input type='radio' onclick='update()' name='"+images[count-1]+"' value='garage'>Garage</li>";
+
+    var br = "<br>";
+    var toHide = $('.image');
+    toHide.addClass('hide');
+    questionDiv.append(inputGStart+content+optionContStart+option1+option2+option3+option4+option5+option6+option7+"</div>"+"</div>");
+  }
+  if(count == images.length){
+    $('input').prop('onclick',null).off('click');
+    questionDiv.append("<input class='btn-lg' type='submit' id='submitButton' value='Submit'/>")
+  }
+}
+</script>
+</body>
+
+</html>
+
